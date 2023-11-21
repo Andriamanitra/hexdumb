@@ -7,7 +7,7 @@ on:
     branches: [ "main" ]
 
 jobs:
-  test:
+  check:
     strategy:
       fail-fast: false
       matrix:
@@ -23,7 +23,7 @@ jobs:
       - name: Build
         run: crystal build hexdumb.cr
       - name: Does it even work?
-        run: ./hexdumb hexdumb
+        run: ./hexdumb hexdumb.cr
       - name: Check formatting
         run: crystal tool format; git diff --exit-code
         if: matrix.os == 'ubuntu-latest'
