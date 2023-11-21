@@ -2,6 +2,10 @@
 
 like hexdump but more dumb and colorful
 
+![screenshot](https://github.com/Andriamanitra/hexdumb/assets/10672443/a9af0d6e-6bd0-4d5e-8e12-aabc5dfb2b7d)
+
+
+
 
 ## Usage
 
