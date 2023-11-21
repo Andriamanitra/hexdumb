@@ -15,7 +15,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Build
-      run: crystal build --release hexdumb.cr && strip hexdumb
+      run: crystal build --release --static hexdumb.cr && strip hexdumb
     - name: Upload
       uses: actions/upload-release-asset@v1.0.1
       env:
