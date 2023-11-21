@@ -7,7 +7,6 @@ module Color
   Nonprintable = Colorize::ColorANSI::Cyan
 end
 
-
 class Hexdumb
   def initialize(io : IO | String)
     @contents = io
@@ -31,7 +30,7 @@ class Hexdumb
       while hexbytes.size < linesize
         hexbytes.push("  ".colorize(:default))
       end
-      bytestr = hexbytes.each_slice(@groupsize).map{|g| g.join(' ')}.join("  ")
+      bytestr = hexbytes.each_slice(@groupsize).map { |g| g.join(' ') }.join("  ")
       ascii =
         bytes
           .map { |b| show_ascii(b.chr).colorize(color(b)) }
@@ -51,25 +50,24 @@ class Hexdumb
 
   def color(ch : UInt8) : Colorize::Color
     case ch
-    when 0_u8 then Color::Null
+    when 0_u8          then Color::Null
     when 9, 10, 13, 32 then Color::Whitespace
-    when 33..127 then Color::Ascii
-    else Color::Nonprintable
+    when 33..127       then Color::Ascii
+    else                    Color::Nonprintable
     end
   end
 
   def show_ascii(ch : Char) : Char
     case ch
-    when '\t' then '–'
-    when '\r' then '␍'
-    when '\n' then '⏎'
-    when ' ' then '·'
+    when '\t'     then '–'
+    when '\r'     then '␍'
+    when '\n'     then '⏎'
+    when ' '      then '·'
     when '!'..'~' then ch
-    else '.'
+    else               '.'
     end
   end
 end
-
 
 if STDIN.tty? && ARGV.empty?
   puts "Type something to see it hexdumbed (Ctrl-d to stop)"
