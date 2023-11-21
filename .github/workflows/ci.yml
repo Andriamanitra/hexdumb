@@ -1,0 +1,29 @@
+name: CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  check:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+          - os: windows-latest
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Download source
+        uses: actions/checkout@v3
+      - name: Install Crystal
+        uses: crystal-lang/install-crystal@v1
+      - name: Build
+        run: crystal build hexdumb.cr
+      - name: Does it even work?
+        run: ./hexdumb hexdumb.cr
+      - name: Check formatting
+        run: crystal tool format; git diff --exit-code
+        if: matrix.os == 'ubuntu-latest'
