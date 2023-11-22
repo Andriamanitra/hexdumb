@@ -22,28 +22,29 @@ class Hexdumb
     @contents.each_byte.each_slice(linesize)
   end
 
+  def grouped(line, element_sep = "", group_sep = " ") : String
+    line.each_slice(@groupsize).map(&.join(element_sep)).join(group_sep)
+  end
+
   def output
     sz = linesize * 3
-    lines.zip(0..) do |bytes, idx|
+    lines.each_with_index do |bytes, idx|
       offset = idx * linesize
       hexbytes = bytes.map { |b| ("%02x" % b).colorize(color(b)) }
       while hexbytes.size < linesize
         hexbytes.push("  ".colorize(:default))
       end
-      bytestr = hexbytes.each_slice(@groupsize).map { |g| g.join(' ') }.join("  ")
-      ascii =
-        bytes
-          .map { |b| show_ascii(b.chr).colorize(color(b)) }
-          .each_slice(@groupsize)
-          .map(&.join)
-          .join(' ')
+      asciibytes = bytes.map { |b| show_ascii(b.chr).colorize(color(b)) }
+      grouped_hex = grouped(hexbytes, " ", "  ")
+      grouped_ascii = grouped(asciibytes, "", " ")
 
       begin
-        puts "%08x ┃  %s  │  %s" % [offset, bytestr, ascii]
-      rescue IO::Error
+        puts "%08x ┃  %s  │  %s" % [offset, grouped_hex, grouped_ascii]
+      rescue exc : IO::Error
         # Prevent printing long and confusing stack trace when pipe is closed
         # (for example when piping output to a pager and the pager is stopped)
-        abort
+        abort if exc.os_error == Errno::EPIPE
+        raise exc
       end
     end
   end
