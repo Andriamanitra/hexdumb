@@ -13,13 +13,13 @@ class Hexdumb
     @input : IO | String,
     @max_bytes : UInt32? = nil,
     @skip = 0_u32,
-    @group_size = 8_u8,
-    @groups_per_line = 2_u8,
+    @group_size = 8_u32,
+    @groups_per_line = 2_u32,
     @bytefmt = "%02x"
   )
   end
 
-  def linesize
+  def linesize : UInt32
     @group_size * @groups_per_line
   end
 
@@ -41,8 +41,6 @@ class Hexdumb
   end
 
   def output
-    sz = linesize * 3
-
     lines.each_with_index do |bytes, idx|
       offset = @skip + idx * linesize
       hexbytes = bytes.map { |b| (@bytefmt % b).colorize(color(b)) }
@@ -95,19 +93,19 @@ OptionParser.parse do |parser|
   parser.banner = "Usage: hexdumb [filename]"
 
   parser.on("-n N", "--length=N", "Interpret only N bytes of input") do |n|
-    max_bytes = n.to_u32
+    max_bytes = n.to_u32 rescue abort "Invalid UInt32: #{n}"
   end
 
   parser.on("-s OFFSET", "--skip=OFFSET", "Skip OFFSET bytes from the beginning of the input") do |n|
-    skip = n.to_u32
+    skip = n.to_u32 rescue abort "Invalid UInt32: #{n}"
   end
 
   parser.on("-g N", "--groups=N", "Number of groups per line (default: 2)") do |n|
-    groups_per_line = n.to_u8
+    groups_per_line = n.to_u8 rescue abort "Invalid UInt8: #{n}"
   end
 
   parser.on("-b N", "--bytes-per-group=N", "Number of bytes per group (default: 8)") do |n|
-    group_size = n.to_u8
+    group_size = n.to_u8 rescue abort "Invalid UInt8: #{n}"
   end
 
   parser.on("-d", "--decimal", "Show bytes in base 10") do
