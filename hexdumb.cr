@@ -141,4 +141,6 @@ rescue exc : File::NotFoundError
   abort "Unable to read file '#{exc.file}': File does not exist"
 rescue exc : File::AccessDeniedError
   abort "Unable to read file '#{exc.file}': Access denied"
+rescue exc : IO::Error
+  abort "#{exc}"
 end
